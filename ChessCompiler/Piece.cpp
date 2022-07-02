@@ -6,7 +6,7 @@ std::vector<sf::Texture> Piece::textures;
 std::vector<sf::Sprite> Piece::sprites;
 
 
-bool PieceBoard::checkCheck(const std::vector<std::vector<Piece*>>& board, bool isWhite, std::string info)
+bool PieceBoard::checkCheck(const std::vector<std::vector<Piece*>>& board, bool isWhite,const _info& info)
 {
 	Piece* king = nullptr;
 	for (int column = 1; column <= 8 && !king; ++column)
@@ -33,7 +33,7 @@ bool PieceBoard::checkCheck(const std::vector<std::vector<Piece*>>& board, bool 
 	return false;
 }
 
-PieceBoard::PieceBoard(std::string FEN)
+PieceBoard::PieceBoard(std::string FEN) : info(std::string())
 {
 	std::vector<std::vector<Piece*>> position(9, std::vector<Piece*>(9));
 	auto current = FEN.begin();
@@ -58,7 +58,7 @@ PieceBoard::PieceBoard(std::string FEN)
 		}
 	}
 	board = position;
-	info = FEN.substr(current - FEN.begin());
+	info = _info(std::string(FEN.substr(current - FEN.begin())));
 }
 
 void PieceBoard::move(std::string move)
@@ -69,22 +69,22 @@ void PieceBoard::move(std::string move)
 	sf::Vector2i end = { move[3] - 'a' + 1 , move[4] - '0' };
 	if (!board[pos.x][pos.y])
 		throw (std::string)"No piece to move";
-	if (board[pos.x][pos.y]->isWhite() != (info.front() == 'w'))
+	if (board[pos.x][pos.y]->isWhite() != (info[_info::color] == 'w'))
 		throw (std::string)"No piece to move";
 	if (!board[pos.x][pos.y]->canMoveTo(end, board, info))
 		throw (std::string)"This piece cant move like this";
-	bool isWhite = info.front() == 'w';
+	bool isWhite = info[_info::color] == 'w';
 
-	info[2] = '-';
-	info[3] = '-';
+	info[_info::enPassantColumn] = '-';
+	info[_info::enPassantRow] = '-';
 
 	if (dynamic_cast<Pawn*>(board[pos.x][pos.y]))
 	{
 		auto delta = end - pos;
 		if (abs(delta.y) == 2)
 		{
-			info[2] = pos.x + 'a' - 1;
-			info[3] = pos.y + delta.y / 2 + '0';
+			info[_info::enPassantColumn] = pos.x + 'a' - 1;
+			info[_info::enPassantRow] = pos.y + delta.y / 2 + '0';
 		}
 	}
 
@@ -158,7 +158,7 @@ void PieceBoard::move(std::string move)
 		}
 	}
 
-	info.front() = (info.front() == 'w' ? 'b' : 'w');
+	info.changeColor();
 
 }
 
@@ -311,7 +311,7 @@ bool King::canBeat(const sf::Vector2i& square) const
 	return abs(delta.x) <= 1 && abs(delta.y) <= 1;
 }
 
-bool King::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board, const std::string& info) const
+bool King::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board,const PieceBoard::_info& info) const
 {
 	if (!canBeat(square))
 		return false;
@@ -331,7 +331,7 @@ bool Queen::canBeat(const sf::Vector2i& square) const
 	return false;
 }
 
-bool Queen::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board, const std::string& info) const
+bool Queen::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board,const PieceBoard::_info& info) const
 {
 	if (!canBeat(square))
 		return false;
@@ -356,7 +356,7 @@ bool Rook::canBeat(const sf::Vector2i& square) const
 	return false;
 }
 
-bool Rook::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board, const std::string& info) const
+bool Rook::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board,const PieceBoard::_info& info) const
 {
 	if (!canBeat(square))
 		return false;
@@ -381,7 +381,7 @@ bool Bishop::canBeat(const sf::Vector2i& square) const
 	return false;
 }
 
-bool Bishop::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board, const std::string& info) const
+bool Bishop::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board, const PieceBoard::_info& info) const
 {
 	if (!canBeat(square))
 		return false;
@@ -413,7 +413,7 @@ bool Knight::canBeat(const sf::Vector2i& square) const
 	return false;
 }
 
-bool Knight::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board, const std::string& info) const
+bool Knight::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board,const PieceBoard::_info& info) const
 {
 	if (!canBeat(square))
 		return false;
@@ -446,7 +446,7 @@ bool Pawn::canBeat(const sf::Vector2i& square) const
 	return false;
 }
 
-bool Pawn::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board, const std::string& info) const
+bool Pawn::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board,const PieceBoard::_info& info) const
 {
 	if (!canBeat(square))
 	{
@@ -495,10 +495,10 @@ bool Pawn::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>
 				return false;
 		if (!board[square.x][square.y])
 		{
-			if (info[2] == '-')
+			if (info[PieceBoard::_info::enPassantColumn] == '-')
 				return false;
-			int column = info[2] - 'a' + 1;
-			int row = info[3] - '0';
+			int column = info[PieceBoard::_info::enPassantColumn] - 'a' + 1;
+			int row = info[PieceBoard::_info::enPassantRow] - '0';
 			if (square != sf::Vector2i(column, row))
 				return false;
 		}
