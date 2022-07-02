@@ -50,6 +50,7 @@ protected:
 	Type type;
 	Piece(char type, const sf::Vector2i& position) : type(getType(type)), position(sf::Vector2i(position.x, position.y)) {}
 public:
+	char getChar();
 	void setPosition(sf::Vector2i pos) { position = pos; };
 	sf::Vector2i getPosition() const { return position; };
 	void draw() const;

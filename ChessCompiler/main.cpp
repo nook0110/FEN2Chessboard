@@ -10,7 +10,7 @@ std::string generateChess960()
 	std::string FENBlack = "--------";
 	std::string FENWhite = "--------";
 	std::string middle = "/pppppppp/8/8/8/8/PPPPPPPP/";
-	std::string info = "w-- 0 1";
+	std::string info = " w -- 0 1";
 	std::mt19937 mt(time(nullptr));
 	std::uniform_int_distribution <int> bishop(0, 3);
 	unsigned int firstBishop = bishop(mt) * 2;
@@ -96,7 +96,7 @@ int main()
 {
 	Piece::initialize();
 	PieceBoard board(generateChess960());
-
+	std::cout << board.getFEN() << std::endl;
 	Board background(window, "board.png", size);
 
 	std::string move;
@@ -140,6 +140,8 @@ int main()
 				std::cout << error << std::endl;
 			}
 			move.clear();
+			std::cout << board.getFEN() << std::endl;
+
 		}
 	}
 }

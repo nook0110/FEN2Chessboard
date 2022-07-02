@@ -6,7 +6,7 @@ std::vector<sf::Texture> Piece::textures;
 std::vector<sf::Sprite> Piece::sprites;
 
 
-bool PieceBoard::checkCheck(const std::vector<std::vector<Piece*>>& board, bool isWhite,const _info& info)
+bool PieceBoard::checkCheck(const std::vector<std::vector<Piece*>>& board, bool isWhite, const _info& info)
 {
 	Piece* king = nullptr;
 	for (int column = 1; column <= 8 && !king; ++column)
@@ -176,7 +176,35 @@ void PieceBoard::draw()
 
 std::string PieceBoard::getFEN()
 {
-	return std::string();
+	std::string FEN;
+	for (int row = 8; row >= 1; --row)
+	{
+		int freeSq = 0;
+		for (int column = 1; column <= 8; ++column)
+		{
+			if (board[column][row])
+			{
+				if (freeSq != 0)
+				{
+					FEN += freeSq + '0';
+				}
+				freeSq = 0;
+				FEN += board[column][row]->getChar();
+			}
+			else
+			{
+				++freeSq;
+			}
+		}
+		if (freeSq != 0)
+		{
+			FEN += freeSq + '0';
+		}
+		if (row != 1)
+			FEN += '/';
+	}
+	FEN += " " + info.info;
+	return FEN;
 }
 
 
@@ -265,6 +293,51 @@ Piece::Type Piece::getType(char name)
 	}
 }
 
+char Piece::getChar()
+{
+	switch (type)
+	{
+	case Piece::K:
+		return 'K';
+		break;
+	case Piece::Q:
+		return 'Q';
+		break;
+	case Piece::R:
+		return 'R';
+		break;
+	case Piece::B:
+		return 'B';
+		break;
+	case Piece::N:
+		return 'N';
+		break;
+	case Piece::P:
+		return 'P';
+		break;
+	case Piece::k:
+		return 'k';
+		break;
+	case Piece::q:
+		return 'q';
+		break;
+	case Piece::r:
+		return 'r';
+		break;
+	case Piece::b:
+		return 'b';
+		break;
+	case Piece::n:
+		return 'n';
+		break;
+	case Piece::p:
+		return 'p';
+		break;
+	default:
+		break;
+	}
+}
+
 void Piece::draw() const
 {
 	sprites[type].setPosition((position.x - 1) * size.x / 8.f, (8 - position.y) * size.y / 8.f);
@@ -311,7 +384,7 @@ bool King::canBeat(const sf::Vector2i& square) const
 	return abs(delta.x) <= 1 && abs(delta.y) <= 1;
 }
 
-bool King::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board,const PieceBoard::_info& info) const
+bool King::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board, const PieceBoard::_info& info) const
 {
 	if (!canBeat(square))
 		return false;
@@ -331,7 +404,7 @@ bool Queen::canBeat(const sf::Vector2i& square) const
 	return false;
 }
 
-bool Queen::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board,const PieceBoard::_info& info) const
+bool Queen::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board, const PieceBoard::_info& info) const
 {
 	if (!canBeat(square))
 		return false;
@@ -356,7 +429,7 @@ bool Rook::canBeat(const sf::Vector2i& square) const
 	return false;
 }
 
-bool Rook::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board,const PieceBoard::_info& info) const
+bool Rook::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board, const PieceBoard::_info& info) const
 {
 	if (!canBeat(square))
 		return false;
@@ -413,7 +486,7 @@ bool Knight::canBeat(const sf::Vector2i& square) const
 	return false;
 }
 
-bool Knight::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board,const PieceBoard::_info& info) const
+bool Knight::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board, const PieceBoard::_info& info) const
 {
 	if (!canBeat(square))
 		return false;
@@ -446,7 +519,7 @@ bool Pawn::canBeat(const sf::Vector2i& square) const
 	return false;
 }
 
-bool Pawn::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board,const PieceBoard::_info& info) const
+bool Pawn::canMoveTo(sf::Vector2i square, const std::vector<std::vector<Piece*>>& board, const PieceBoard::_info& info) const
 {
 	if (!canBeat(square))
 	{
