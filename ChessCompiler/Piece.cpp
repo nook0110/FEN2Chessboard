@@ -86,7 +86,7 @@ void PieceBoard::move(std::string move)
 			info[_info::enPassantColumn] = pos.x + 'a' - 1;
 			info[_info::enPassantRow] = pos.y + delta.y / 2 + '0';
 		}
-	}
+	}	
 
 	if (dynamic_cast<Pawn*>(board[pos.x][pos.y]) && pos.x != end.x)
 	{

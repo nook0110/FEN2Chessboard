@@ -41,6 +41,8 @@ std::string generateChess960()
 			++firstKnight;
 		}
 	}
+	FENBlack[firstKnight] = 'n';
+	FENWhite[firstKnight] = 'N';
 	for (int pos = 0; pos < 8; ++pos)
 	{
 		if (FENBlack[pos] != '-' && pos <= secondKnight)
@@ -48,8 +50,6 @@ std::string generateChess960()
 			++secondKnight;
 		}
 	}
-	FENBlack[firstKnight] = 'n';
-	FENWhite[firstKnight] = 'N';
 	FENBlack[secondKnight] = 'n';
 	FENWhite[secondKnight] = 'N';
 	for (int pos = 0, freeSq = 0; pos < 8; ++pos)
