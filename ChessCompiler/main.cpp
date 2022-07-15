@@ -1,77 +1,9 @@
-#include "Piece.h"
-#include <random>
+#include "Player.h"
+
 sf::Vector2f size(800, 800);
 sf::RenderWindow window(sf::VideoMode(size.x, size.y), "Chess");
 
 #include <iostream>
-
-std::string generateChess960()
-{
-	std::string FENBlack = "--------";
-	std::string FENWhite = "--------";
-	std::string middle = "/pppppppp/8/8/8/8/PPPPPPPP/";
-	std::string info = " w -- 0 1";
-	std::mt19937 mt(time(nullptr));
-	std::uniform_int_distribution <int> bishop(0, 3);
-	unsigned int firstBishop = bishop(mt) * 2;
-	unsigned int secondBishop = bishop(mt) * 2 + 1;
-	FENBlack[firstBishop] = 'b';
-	FENBlack[secondBishop] = 'b';
-	FENWhite[firstBishop] = 'B';
-	FENWhite[secondBishop] = 'B';
-	std::uniform_int_distribution <int> queen(0, 5);
-	unsigned int posQueen = queen(mt);
-	for (int pos = 0; pos < 8; ++pos)
-	{
-		if (FENBlack[pos] != '-' && pos <= posQueen)
-		{
-			++posQueen;
-		}
-	}
-	FENBlack[posQueen] = 'q';
-	FENWhite[posQueen] = 'Q';
-	std::uniform_int_distribution <int> knight1(0, 3);
-	std::uniform_int_distribution <int> knight2(0, 2);
-	unsigned int firstKnight = knight1(mt);
-	unsigned int secondKnight = knight2(mt);
-	for (int pos = 0; pos < 8; ++pos)
-	{
-		if (FENBlack[pos] != '-' && pos <= firstKnight)
-		{
-			++firstKnight;
-		}
-	}
-	FENBlack[firstKnight] = 'n';
-	FENWhite[firstKnight] = 'N';
-	for (int pos = 0; pos < 8; ++pos)
-	{
-		if (FENBlack[pos] != '-' && pos <= secondKnight)
-		{
-			++secondKnight;
-		}
-	}
-	FENBlack[secondKnight] = 'n';
-	FENWhite[secondKnight] = 'N';
-	for (int pos = 0, freeSq = 0; pos < 8; ++pos)
-	{
-		if (FENBlack[pos] == '-')
-		{
-			if (freeSq != 1)
-			{
-				FENBlack[pos] = 'r';
-				FENWhite[pos] = 'R';
-			}
-			else
-			{
-				FENBlack[pos] = 'k';
-				FENWhite[pos] = 'K';
-			}
-			++freeSq;
-		}
-	}
-
-	return FENBlack + middle + FENWhite + info;
-}
 
 struct Board
 {
@@ -95,6 +27,8 @@ struct Board
 int main()
 {
 	Piece::initialize();
+	std::string FEN;
+	//std::cin >> FEN;
 	PieceBoard board(generateChess960());
 	std::cout << board.getFEN() << std::endl;
 	Board background(window, "board.png", size);

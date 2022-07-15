@@ -35,6 +35,30 @@ bool PieceBoard::checkCheck(const std::vector<std::vector<Piece*>>& board, bool 
 
 PieceBoard::PieceBoard(std::string FEN) : info(std::string())
 {
+	if (FEN.size() == 64)
+	{
+		auto current = FEN.begin();
+		for (int row = 8; row >= 1; --row, ++current)
+		{
+			for (int column = 1; current != FEN.end() && *current != '/' && column <= 8; ++current)
+			{
+				try
+				{
+					board[column][row] = Piece::getPiece(*current, sf::Vector2i(column, row));
+				}
+				catch (std::string excep)
+				{
+				}
+
+				++column;
+			}
+			if (current == FEN.end())
+			{
+				break;
+			}
+		}
+		return;
+	}
 	std::vector<std::vector<Piece*>> position(9, std::vector<Piece*>(9));
 	auto current = FEN.begin();
 	for (int row = 8; row >= 1; --row, ++current)
