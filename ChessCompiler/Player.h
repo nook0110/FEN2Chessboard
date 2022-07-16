@@ -28,7 +28,7 @@ class Game
 	PieceBoard board = PieceBoard(generateChess960());
 	Player first, second;
 	int move = 1;
-
+	const std::string globPath = "Moves\\";
 public:
 	Game(std::string firstPath, std::string secondPath) : first(Player(firstPath)), second(Player(secondPath))
 	{}
@@ -38,20 +38,22 @@ public:
 	}
 	void makeMove()
 	{
-		std::string in = "Imove" + std::to_string(move) + ".txt";
-		std::string out = "Omove" + std::to_string(move) + ".txt";
-		std::ofstream moveFile(in);
-
+		std::string in = globPath + "Imove" + std::to_string(move) + ".txt";
+		std::string out = globPath + "Omove" + std::to_string(move) + ".txt";
+		std::ofstream moveFile(in, std::ios::trunc);
 		moveFile << board.getFEN() + " " + std::to_string(move);
 		if (move != 1)
 		{
-			std::ifstream lastMoveFile("Omove" + std::to_string(move - 1) + ".txt");
+			std::ifstream lastMoveFile("Omove" + std::to_string(move - 1) + ".txt", std::ios::trunc);
 			std::string lastMove;
 			std::getline(lastMoveFile, lastMove);
 			moveFile << std::endl << lastMove;
 		}
-		(move % 2 ? first : second).doMove(in, out);
+		moveFile.close();
+		std::ofstream create(out, std::ios::trunc);
+		create.close();
 		std::ifstream currentMoveFile(out);
+		(move % 2 ? first : second).doMove(in, out);
 		std::string currentMove;
 		std::getline(currentMoveFile, currentMove);
 		try
@@ -60,8 +62,8 @@ public:
 		}
 		catch (std::string exc)
 		{
-			std::cout << exc << std::endl;
-			std::cout << (move % 2 ? "First Player" : "Second Player");
+			throw(exc + (move % 2 ? " by First Player" : " by Second Player") + "\n Move was:" + currentMove);
 		}
+		++move;
 	}
 };

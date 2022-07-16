@@ -34,7 +34,7 @@ int main()
 	Board background(window, "board.png", size);
 
 	std::string move;
-
+	/*
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -77,5 +77,32 @@ int main()
 			std::cout << board.getFEN() << std::endl;
 
 		}
+	}*/
+	Game game("Player1.exe", "Player2.exe");
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape))
+			{
+				exit(0);
+			}
+		}
+		window.clear(sf::Color::White);
+		background.draw();
+		game.draw();
+		window.display();
+		sf::sleep(sf::seconds(5));
+		try
+		{
+			game.makeMove();
+		}
+		catch (std::string exc)
+		{
+			std::cout << exc << std::endl;
+		}
+		window.setVisible(1);
+
 	}
 }
