@@ -63,7 +63,7 @@ std::string generateChess960()
 	std::string FENBlack = "--------";
 	std::string FENWhite = "--------";
 	std::string middle = "/pppppppp/8/8/8/8/PPPPPPPP/";
-	std::string info = " w --";
+	std::string info = " w -- 1";
 	std::mt19937 mt(time(nullptr));
 	std::uniform_int_distribution <int> bishop(0, 3);
 	unsigned int firstBishop = bishop(mt) * 2;

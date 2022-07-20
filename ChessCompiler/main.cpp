@@ -29,8 +29,6 @@ int main()
 	Piece::initialize();
 	std::string FEN;
 	//std::cin >> FEN;
-	PieceBoard board(generateChess960());
-	std::cout << board.getFEN() << std::endl;
 	Board background(window, "board.png", size);
 
 	std::string move;
@@ -78,7 +76,7 @@ int main()
 
 		}
 	}*/
-	Game game("Player1.exe", "Player2.exe");
+	Game game("", "");
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -93,7 +91,15 @@ int main()
 		background.draw();
 		game.draw();
 		window.display();
-		sf::sleep(sf::seconds(5));
+		sf::Clock cl;
+		cl.restart();
+		while (cl.getElapsedTime().asSeconds() < 2)
+		{
+			window.clear(sf::Color::White);
+			background.draw();
+			game.draw();
+			window.display();
+		}
 		try
 		{
 			game.makeMove();

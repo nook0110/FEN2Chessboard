@@ -14,7 +14,7 @@ std::string generateChess960();
 
 class Player
 {
-	sf::Time timeLeft = sf::Time(sf::seconds(180));
+	sf::Time timeLeft = sf::Time(sf::seconds(1000000));
 	sf::Clock timeForMove;
 	std::string path;
 
@@ -44,7 +44,7 @@ public:
 		moveFile << board.getFEN() + " " + std::to_string(move);
 		if (move != 1)
 		{
-			std::ifstream lastMoveFile("Omove" + std::to_string(move - 1) + ".txt", std::ios::trunc);
+			std::ifstream lastMoveFile(globPath + "Omove" + std::to_string(move - 1) + ".txt");
 			std::string lastMove;
 			std::getline(lastMoveFile, lastMove);
 			moveFile << std::endl << lastMove;
