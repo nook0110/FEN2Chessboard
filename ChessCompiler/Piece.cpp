@@ -26,7 +26,17 @@ bool PieceBoard::checkCheck(const std::vector<std::vector<Piece*>>& board, bool 
 			if (piece && piece->isWhite() != isWhite)
 			{
 				if (piece->canMoveTo(king->getPosition(), board, info))
-					return true;
+				{
+					if (!dynamic_cast<Pawn*>(piece))
+					{
+						return true;
+					}
+					else
+					{
+						if (piece->canBeat(king->getPosition()))
+							return true;
+					}
+				}
 			}
 		}
 	}
@@ -91,6 +101,10 @@ void PieceBoard::move(std::string move)
 	//           0123456789
 	sf::Vector2i pos = { move[0] - 'a' + 1 , move[1] - '0' };
 	sf::Vector2i end = { move[3] - 'a' + 1 , move[4] - '0' };
+	if (pos.x < 1 || pos.y < 1 || pos.x>8 || pos.y>8)
+		throw (std::string)"Incorrect start";
+	if (end.x < 1 || end.y < 1 || end.x>8 || end.y>8)
+		throw (std::string)"Incorrect end";
 	if (!board[pos.x][pos.y])
 		throw (std::string)"No piece to move";
 	if (board[pos.x][pos.y]->isWhite() != (info[_info::color] == 'w'))

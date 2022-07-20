@@ -25,6 +25,7 @@ public:
 
 class Game
 {
+public:
 	PieceBoard board = PieceBoard(generateChess960());
 	Player first, second;
 	int move = 1;

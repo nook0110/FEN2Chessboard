@@ -28,7 +28,7 @@ int main()
 {
 	Piece::initialize();
 	std::string FEN;
-	//std::cin >> FEN;
+	std::getline(std::cin, FEN);
 	Board background(window, "board.png", size);
 
 	std::string move;
@@ -76,7 +76,13 @@ int main()
 
 		}
 	}*/
-	Game game("", "");
+	/*Game game("Chess.exe", "Player2.exe");
+	game.board = PieceBoard(FEN);
+	window.clear(sf::Color::White);
+	background.draw();
+	game.draw();
+	window.display();
+	sf::sleep(sf::seconds(5));
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -110,5 +116,65 @@ int main()
 		}
 		window.setVisible(1);
 
+	}*/
+
+
+
+	Game game("Chess.exe", "Chess.exe");
+	game.board = PieceBoard(FEN);
+	window.clear(sf::Color::White);
+	background.draw();
+	game.draw();
+	window.display();
+	sf::sleep(sf::seconds(5));
+	int m = 0;
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape))
+			{
+				exit(0);
+			}
+			if (event.type == sf::Event::MouseButtonPressed)
+			{
+				auto pos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+				int column = pos.x / (size.x / 8.f);
+				int row = 8 - pos.y / (size.y / 8.f);
+
+				move += (char)(column + 'a');
+				move += (char)(row + '1');
+				move += ' ';
+			}
+		}
+		window.clear(sf::Color::White);
+		background.draw();
+		game.draw();
+		window.display();
+		if (m%2 == 0)
+		{
+			game.makeMove();
+			m++;
+			continue;
+		}
+		if (m%2==1 && move.size() == 6)
+		{
+			std::cout << move << std::endl;
+			try
+			{
+				game.board.move(move);
+
+				move.clear();
+				game.move++;
+				m++;
+			}
+			catch (std::string error)
+			{
+				move.clear();
+				std::cout << error << std::endl;
+			}
+		}
 	}
+
 }
